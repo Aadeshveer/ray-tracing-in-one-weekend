@@ -32,6 +32,7 @@ public:
     // util functions
     double norm() const;
     double norm_squared() const;
+
 };
 
 // point3 as an alias for vec3 for clarity
