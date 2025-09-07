@@ -2,12 +2,23 @@
 #include "ray.hpp"
 #include "color.hpp"
 
+bool hit_sphere(const vec3 &center, double radius, const ray& r) {
+    double a = dot(r.direction(), r.direction());
+    double b = 2*dot(r.direction(), r.origin()-center);
+    double c = (center-r.origin()).norm() - radius*radius;
+    return b*b >= 4*a*c;
+}
+
 color ray_color(const ray &r) {
     vec3 unit_dir = unit_vector(r.direction());
+    if(hit_sphere(vec3(0.5,0.5,-1), 0.25, r)) {
+        return color(1.0, 0.0, 0.0);
+    }
     // implementing lerp
     double a = 0.5*(unit_dir.y() + 1.0);
     return (1.0 - a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
 }
+
 
 int main() {
     // image parmeters
@@ -17,7 +28,7 @@ int main() {
     if(image_height < 1) image_height = 1;
     
     // camera parameters
-    double focal_length = 2;
+    double focal_length = 1;
     double viewport_height = 2.0;
     double viewport_width = viewport_height * (1.0*image_width) / image_height;
     point3 camera_center = point3(0, 0, 0);
@@ -31,7 +42,7 @@ int main() {
     vec3 pixel_delta_v = viewport_v/image_height;
 
     // locating the origin of viewport i.e. upperleft
-    vec3 viewport_upper_left = camera_center + vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
+    vec3 viewport_upper_left = camera_center - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
     vec3 pixel_00_loc = viewport_upper_left + pixel_delta_u*0.5 + pixel_delta_v*0.5;
 
     // Rendering
