@@ -55,9 +55,9 @@ inline vec3 operator+ (const vec3& u, const vec3& v) {
 }
 inline vec3 operator- (const vec3& u, const vec3& v) {
     return vec3(
-        u.x() + v.x(),
-        u.y() + v.y(),
-        u.z() + v.z()
+        u.x() - v.x(),
+        u.y() - v.y(),
+        u.z() - v.z()
     );
 }
 inline vec3 operator* (const vec3& u, const vec3& v) {
