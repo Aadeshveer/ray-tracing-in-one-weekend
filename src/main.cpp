@@ -4,11 +4,11 @@
 
 double hit_sphere(const vec3 &center, double radius, const ray& r) {
     double a = dot(r.direction(), r.direction());
-    double b = 2*dot(r.direction(), r.origin()-center);
+    double h = dot(r.direction(), center-r.origin());
     double c = (center-r.origin()).norm() - radius*radius;
-    double det = b*b-4*a*c;
+    double det = h*h-a*c;
     if(det >=0 ) {
-        return (-b-sqrt(det))/(2*a);
+        return (h-sqrt(det))/a;
     }
     else {
         return -1.0;

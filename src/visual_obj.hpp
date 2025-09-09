@@ -1,0 +1,19 @@
+#ifndef VISUAL_OBJ_HPP
+#define VISUAL_OBJ_HPP
+
+#include "ray.hpp"
+
+struct hit_record {
+    point3 p;
+    vec3 normal;
+    double t;   
+};
+
+
+class visual_obj {
+public:
+    virtual ~visual_obj() = default;
+    virtual bool hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& hit_rec) const = 0;
+};
+
+#endif
