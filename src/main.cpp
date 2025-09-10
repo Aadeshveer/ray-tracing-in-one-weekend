@@ -1,28 +1,15 @@
-#include "vec3.hpp"
-#include "ray.hpp"
-#include "color.hpp"
+#include "common.hpp"
+#include "visual_obj.hpp"
+#include "visual_obj_list.hpp"
+#include "shapes.hpp"
 
-double hit_sphere(const vec3 &center, double radius, const ray& r) {
-    double a = dot(r.direction(), r.direction());
-    double h = dot(r.direction(), center-r.origin());
-    double c = (center-r.origin()).norm() - radius*radius;
-    double det = h*h-a*c;
-    if(det >=0 ) {
-        return (h-sqrt(det))/a;
+color ray_color(const ray &r, const visual_obj_list &world) {
+    hit_record rec;
+    if(world.hit(r, 0, infinity, rec)) {
+        return 0.5*(rec.normal + color(1,1,1));
     }
-    else {
-        return -1.0;
-    }
-}
 
-color ray_color(const ray &r) {
     vec3 unit_dir = unit_vector(r.direction());
-    vec3 center = vec3(0,0,-1);
-    double hit = hit_sphere(center, 0.5, r);
-    if(hit >= 0) {
-        vec3 N = unit_vector(r.at(hit)-center);
-        return 0.5*color(N.x() + 1, N.y() + 1, N.z() + 1);
-    }
     // implementing lerp
     double a = 0.5*(unit_dir.y() + 1.0);
     return (1.0 - a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
@@ -36,6 +23,13 @@ int main() {
     int image_height = image_width/aspect_ratio;
     if(image_height < 1) image_height = 1;
     
+    // world
+    visual_obj_list world;
+    sphere* s1 = new sphere(point3(0,0,-1), 0.5);
+    world.add(s1);
+    sphere* s2 = new sphere(point3(0,-100.5,-1), 100);
+    world.add(s2);
+
     // camera parameters
     double focal_length = 1;
     double viewport_height = 2.0;
@@ -63,7 +57,7 @@ int main() {
             vec3 ray_dir = pixel_center - camera_center;
             ray r(camera_center, ray_dir);
 
-            color pixel_clr = ray_color(r);
+            color pixel_clr = ray_color(r, world);
             write_color(std::cout, pixel_clr);
         }
     }

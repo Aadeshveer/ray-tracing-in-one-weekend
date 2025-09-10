@@ -8,7 +8,7 @@ sphere::sphere(const point3& center, double radius) {
 bool sphere::hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& hit_rec) const {
     double a = dot(r.direction(), r.direction());
     double h = dot(r.direction(), center-r.origin());
-    double c = (center-r.origin()).norm() - radius*radius;
+    double c = (center-r.origin()).norm_squared() - radius*radius;
     double dis = h*h-a*c;
 
     if(dis < 0) {
@@ -29,7 +29,7 @@ bool sphere::hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& hit
     // fill in the record of the hit
     hit_rec.p = r.at(root);
     hit_rec.t = root;
-    hit_rec.normal = (hit_rec.p - center)/radius;
+    hit_rec.set_face_normal(r, (hit_rec.p - center)/radius);
 
     return true;
 }
