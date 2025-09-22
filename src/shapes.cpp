@@ -5,7 +5,7 @@ sphere::sphere(const point3& center, double radius) {
     this->radius = (radius>0 ? radius : 0);
 }
 
-bool sphere::hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& hit_rec) const {
+bool sphere::hit(const ray& r, interval ray_t, hit_record& hit_rec) const {
     double a = dot(r.direction(), r.direction());
     double h = dot(r.direction(), center-r.origin());
     double c = (center-r.origin()).norm_squared() - radius*radius;
@@ -19,9 +19,9 @@ bool sphere::hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& hit
 
     // finding the closest solution in range
     double root = (h-sqrtd)/a;
-    if(root < ray_tmin || root > ray_tmax) {
+    if(!ray_t.surrounds(root)) {
         root = (h+sqrtd)/a;
-        if(root < ray_tmin || root > ray_tmax) {
+        if(!ray_t.surrounds(root)) {
             return false;
         }
     }

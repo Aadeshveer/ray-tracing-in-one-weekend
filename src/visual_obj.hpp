@@ -16,7 +16,7 @@ struct hit_record {
 class visual_obj {
 public:
     virtual ~visual_obj() = default;
-    virtual bool hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& hit_rec) const = 0;
+    virtual bool hit(const ray& r, interval ray_t, hit_record& hit_rec) const = 0;
 };
 
 #endif
