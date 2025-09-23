@@ -17,6 +17,8 @@ void camera::initialize() {
     image_height = image_width/aspect_ratio;
     if(image_height < 1) image_height = 1;
 
+    pixel_sample_scale = 1.0 / samples_per_pixel;
+
     camera_center = point3(0, 0, 0);
     
     // camera parameters
@@ -37,6 +39,27 @@ void camera::initialize() {
     pixel_00_loc = viewport_upper_left + pixel_delta_u*0.5 + pixel_delta_v*0.5;
 }
 
+ray camera::get_ray(int i, int j) const {
+    // Construct a camera ray originating from center to pixel at loc i,j
+    vec3 offset         = sample_square();
+    vec3 pixel_sample   = pixel_00_loc 
+                        + ((i+offset.x())*pixel_delta_u)
+                        + ((j+offset.y())*pixel_delta_v);
+    vec3 ray_origin     = camera_center;
+    vec3 ray_dir        = pixel_sample - ray_origin;
+
+    return ray(ray_origin, ray_dir);
+}
+
+vec3 camera::sample_square() const {
+    // returns vector to random point in [-0.5, 0.5]X[-0.5, 0.5] space
+    return vec3(
+        random_double() - 0.5,
+        random_double() - 0.5,
+        0
+    );
+}
+
 void camera::render(const visual_obj_list& world) {
     initialize();
     // Rendering
@@ -44,12 +67,12 @@ void camera::render(const visual_obj_list& world) {
     for(int i=0 ; i<image_height; i++) {
         std::clog << "\rLines remaining: " << (image_height-i) << ' ' << std::flush;
         for(int j=0; j<image_width; j++) {
-            vec3 pixel_center = pixel_00_loc + pixel_delta_u*j + pixel_delta_v*i;
-            vec3 ray_dir = pixel_center - camera_center;
-            ray r(camera_center, ray_dir);
-
-            color pixel_clr = ray_color(r, world);
-            write_color(std::cout, pixel_clr);
+            color pixel_clr(0, 0, 0);
+            for(int sample=0; sample<samples_per_pixel; sample++) {
+                ray r = get_ray(j, i);
+                pixel_clr += ray_color(r, world);
+            }
+            write_color(std::cout, pixel_sample_scale * pixel_clr);
         }
     }
     std::clog << "\r         Done         \n" << std::endl;
