@@ -1,10 +1,13 @@
 #include "camera.hpp"
 
-color camera::ray_color(const ray& r, const visual_obj& world) const {
+color camera::ray_color(const ray& r, int depth, const visual_obj& world) const {
+    if(depth <= 0) { // once given depth is exceeded the ray is absorbed
+        return color(0,0,0);
+    }
     hit_record rec;
-    if(world.hit(r, interval(0, infinity), rec)) {
-        vec3 direction = random_unit_indir(rec.normal);
-        return 0.5*(ray_color(ray(rec.p, direction), world));
+    if(world.hit(r, interval(0.001, infinity), rec)) {
+        vec3 direction = rec.normal+random_unit_vector();
+        return 0.5*(ray_color(ray(rec.p, direction), depth-1, world));
     }
 
     vec3 unit_dir = unit_vector(r.direction());
@@ -71,7 +74,7 @@ void camera::render(const visual_obj_list& world) {
             color pixel_clr(0, 0, 0);
             for(int sample=0; sample<samples_per_pixel; sample++) {
                 ray r = get_ray(j, i);
-                pixel_clr += ray_color(r, world);
+                pixel_clr += ray_color(r, max_depth, world);
             }
             write_color(std::cout, pixel_sample_scale * pixel_clr);
         }
