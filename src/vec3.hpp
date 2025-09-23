@@ -32,6 +32,7 @@ public:
     // util functions
     double norm() const;
     double norm_squared() const;
+    bool near_zero() const;
     static vec3 random();
     static vec3 random(vec3 min, vec3 max);
     static vec3 random(double min, double max);
@@ -115,5 +116,7 @@ inline vec3 random_unit_indir(vec3& dir) {
     if (dot(dir, random_unit) > 0.0) return random_unit;
     else return -random_unit;
 }
-
+inline vec3 reflect(const vec3& v, const vec3& n) {
+    return v - 2*dot(v,n)*n;
+}
 #endif

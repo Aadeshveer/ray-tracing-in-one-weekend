@@ -1,8 +1,9 @@
 #include "shapes.hpp"
 
-sphere::sphere(const point3& center, double radius) {
+sphere::sphere(const point3& center, double radius, material* mat) {
     this->center = center;
     this->radius = (radius>0 ? radius : 0);
+    this->mat = mat;
 }
 
 bool sphere::hit(const ray& r, interval ray_t, hit_record& hit_rec) const {
@@ -30,6 +31,7 @@ bool sphere::hit(const ray& r, interval ray_t, hit_record& hit_rec) const {
     hit_rec.p = r.at(root);
     hit_rec.t = root;
     hit_rec.set_face_normal(r, (hit_rec.p - center)/radius);
+    hit_rec.mat = mat;
 
     return true;
 }

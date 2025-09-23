@@ -2,6 +2,7 @@
 #define CAMERA_HPP
 
 #include "visual_obj_list.hpp"
+#include "material.hpp"
 
 class camera {
     int image_height;

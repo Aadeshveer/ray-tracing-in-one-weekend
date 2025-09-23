@@ -64,6 +64,11 @@ double vec3::norm() const {
 double vec3::norm_squared() const {
     return V[0]*V[0] + V[1]*V[1] + V[2]*V[2];
 }
+bool vec3::near_zero() const {
+    // return true if vector is close to zero in all dims
+    double s = 1e-8;
+    return norm() < s;
+}
 vec3 vec3::random() {
     return vec3(
         random_double(),
