@@ -1,4 +1,5 @@
 #include "vec3.hpp"
+#include "common.hpp"
 
 // constructors
 vec3::vec3() {
@@ -62,4 +63,24 @@ double vec3::norm() const {
 }
 double vec3::norm_squared() const {
     return V[0]*V[0] + V[1]*V[1] + V[2]*V[2];
+}
+vec3 vec3::random() {
+    return vec3(
+        random_double(),
+        random_double(),
+        random_double()
+    );
+}
+vec3 vec3::random(vec3 min, vec3 max) {
+    return vec3(
+        random_double(min[0], max[0]),
+        random_double(min[1], max[1]),
+        random_double(min[2], max[2])
+    );
+}
+vec3 vec3::random(double min, double max) {
+    return random(
+        vec3(min, min, min),
+        vec3(max, max, max)
+    );
 }

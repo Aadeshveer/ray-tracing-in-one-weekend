@@ -32,7 +32,9 @@ public:
     // util functions
     double norm() const;
     double norm_squared() const;
-
+    static vec3 random();
+    static vec3 random(vec3 min, vec3 max);
+    static vec3 random(double min, double max);
 };
 
 // point3 as an alias for vec3 for clarity
@@ -101,4 +103,17 @@ inline vec3 cross (const vec3& u, const vec3& v) {
 inline vec3 unit_vector(const vec3& u) {
     return vec3(u/u.norm());
 }
+inline vec3 random_unit_vector() {
+    while (true) {
+        vec3 p = vec3::random(-1, 1);
+        double lensq = p.norm_squared();
+        if (1e-160 < lensq && lensq <= 1) return unit_vector(p);
+    }
+}
+inline vec3 random_unit_indir(vec3& dir) {
+    vec3 random_unit = random_unit_vector();
+    if (dot(dir, random_unit) > 0.0) return random_unit;
+    else return -random_unit;
+}
+
 #endif
