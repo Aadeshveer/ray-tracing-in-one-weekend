@@ -12,17 +12,20 @@ int main() {
     // materials
     material* material_ground   = new labertain(color(0.8, 0.8, 0.0));
     material* material_center   = new labertain(color(0.1, 0.2, 0.5));
-    material* material_left     = new metal(color(0.8, 0.8, 0.8), 0.3);
+    material* material_left     = new dielectric(1.5);
+    material* material_bubble   = new dielectric(1.0/1.5);
     material* material_right    = new metal(color(0.8, 0.6, 0.2), 0.1);
 
     sphere* s1 = new sphere(point3( 0.0, -100.5, -1.0), 100.0, material_ground);
     sphere* s2 = new sphere(point3( 0.0,    0.0, -1.2), 0.5, material_center);
-    sphere* s3 = new sphere(point3(-1.0,    0.0, -1.2), 0.5, material_left);
-    sphere* s4 = new sphere(point3( 1.0,    0.0, -1.2), 0.5, material_right);
+    sphere* s3 = new sphere(point3(-1.0,    0.0, -1.0), 0.5, material_left);
+    sphere* s5 = new sphere(point3(-1.0,    0.0, -1.0), 0.4, material_bubble);
+    sphere* s4 = new sphere(point3( 1.0,    0.0, -1.0), 0.5, material_right);
     world.add(s1);
     world.add(s2);
     world.add(s3);
     world.add(s4);
+    world.add(s5);
     // world shapes are deleted by destructor of worlds
     
     camera cam;

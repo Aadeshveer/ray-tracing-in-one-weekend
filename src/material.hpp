@@ -32,4 +32,14 @@ public:
     ) const override;
 };
 
+class dielectric : public material {
+    double refractive_index;
+    static double reflectance(double cosine, double reflective_idx);
+public:
+    dielectric(double refractive_index);
+    virtual bool scatter(
+        const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
+    ) const override;
+};
+
 #endif
