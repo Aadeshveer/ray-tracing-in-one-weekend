@@ -10,39 +10,71 @@ int main() {
     visual_obj_list world;
 
     // materials
-    material* material_ground   = new labertain(color(0.8, 0.8, 0.0));
-    material* material_center   = new labertain(color(0.1, 0.2, 0.5));
-    material* material_left     = new dielectric(1.5);
-    material* material_bubble   = new dielectric(1.0/1.5);
-    material* material_right    = new metal(color(0.8, 0.6, 0.2), 0.1);
+    lambertian material_ground = lambertian(color(0.5, 0.5, 0.5));
+    sphere* s0 = new sphere(point3( 0.0,  -1000, 0.0), 1000, &material_ground);
+    world.add(s0);
 
-    sphere* s1 = new sphere(point3( 0.0, -100.5, -1.0), 100.0, material_ground);
-    sphere* s2 = new sphere(point3( 0.0,    0.0, -1.2), 0.5, material_center);
-    sphere* s3 = new sphere(point3(-1.0,    0.0, -1.0), 0.5, material_left);
-    sphere* s5 = new sphere(point3(-1.0,    0.0, -1.0), 0.4, material_bubble);
-    sphere* s4 = new sphere(point3( 1.0,    0.0, -1.0), 0.5, material_right);
-    world.add(s1);
-    world.add(s2);
-    world.add(s3);
-    world.add(s4);
-    world.add(s5);
-    // world shapes are deleted by destructor of worlds
+    std::vector<material*> materials;
+    for (int a = -11; a < 11; a++) {
+        for (int b = -11; b < 11; b++) {
+            double choose_mat = random_double();
+            point3 center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
+
+            if ((center - point3(4, 0.2, 0)).norm() > 0.9) {
+                sphere* s;
+
+                if (choose_mat < 0.8) {
+                    // diffuse
+                    color albedo = color::random() * color::random();
+                    materials.push_back(new lambertian(albedo));
+                    s = new sphere(center, 0.2, materials.back());
+                    world.add(s);
+                } else if (choose_mat < 0.95) {
+                    // metal
+                    color albedo = color::random(0.5, 1);
+                    double fuzz = random_double(0, 0.5);
+                    materials.push_back(new metal(albedo, fuzz));
+                    s = new sphere(center, 0.2, materials.back());
+                    world.add(s);
+                } else {
+                    // glass
+                    materials.push_back(new dielectric(1.5));
+                    s = new sphere(center, 0.2, materials.back());
+                    world.add(s);
+                }
+            }
+        }
+    }
+
+    auto material1 = dielectric(1.5);
+    sphere* s1 = new sphere(point3(0, 1, 0), 1.0, &material1);
     
+    auto material2 = lambertian(color(0.4, 0.2, 0.1));
+    sphere* s2 = new sphere(point3(-4, 1, 0), 1.0, &material2);
+    
+    auto material3 = metal(color(0.7, 0.6, 0.5), 0.0);
+    sphere* s3 = new sphere(point3(4, 1, 0), 1.0, &material3);
+
+    world.add(s1); world.add(s2); world.add(s3);
+
     camera cam;
-    cam.aspect_ratio = 16.0/9.0;
-    cam.image_width = 400;
-    cam.samples_per_pixel = 100;
-    cam.max_depth = 50;
 
-    cam.vfov = 20;
-    cam.origin = point3(-2, 2, 1);
-    cam.look_dir = vec3(2, -2, -2);
-    cam.up_vec = vec3(0, 1, 0);
+    cam.aspect_ratio      = 16.0 / 9.0;
+    cam.image_width       = 1200;
+    cam.samples_per_pixel = 500;
+    cam.max_depth         = 50;
 
+    cam.vfov     = 20;
+    cam.origin = point3(13,2,3);
+    cam.look_dir   = -cam.origin;
+    cam.up_vec      = vec3(0,1,0);
+
+    cam.defocus_angle = 0.6;
+    cam.focus_dist    = 10.0;
+    
     cam.render(world);
 
-    delete material_center;
-    delete material_ground;
-    delete material_left;
-    delete material_right;
+    for(material* m:materials) {
+        delete m;
+    }
 }

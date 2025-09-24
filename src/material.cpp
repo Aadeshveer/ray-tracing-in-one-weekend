@@ -1,10 +1,10 @@
 #include "material.hpp"
 
-labertain::labertain(const color& albedo) {
+lambertian::lambertian(const color& albedo) {
     this->albedo = albedo;
 }
 
-bool labertain::scatter(
+bool lambertian::scatter(
     const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
 ) const {
     vec3 scatter_dir = rec.normal + random_unit_vector();

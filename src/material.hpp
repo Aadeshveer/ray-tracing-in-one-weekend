@@ -13,10 +13,10 @@ public:
     }
 };
 
-class labertain : public material {
+class lambertian : public material {
     color albedo;
 public:
-    labertain(const color& albedo);
+    lambertian(const color& albedo);
     virtual bool scatter(
         const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
     ) const override;

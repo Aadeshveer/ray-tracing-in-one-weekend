@@ -116,6 +116,15 @@ inline vec3 random_unit_indir(vec3& dir) {
     if (dot(dir, random_unit) > 0.0) return random_unit;
     else return -random_unit;
 }
+inline vec3 random_in_unit_disk() {
+    while (true) {
+        vec3 p = vec3::random(-1, 1);
+        p[2] = 0;
+        if (p.norm_squared() < 1) {
+            return p;
+        }
+    }
+}
 inline vec3 reflect(const vec3& v, const vec3& n) {
     return v - 2*dot(v,n)*n;
 }

@@ -30,10 +30,9 @@ void camera::initialize() {
     camera_center = origin;
     
     // camera parameters
-    double focal_length     = look_dir.norm();
     double theta            = degrees_to_radians(vfov);
     double h                = std::tan(theta/2);
-    double viewport_height  = 2 * h * focal_length;
+    double viewport_height  = 2 * h * focus_dist;
     double viewport_width   = viewport_height * (1.0*image_width) / image_height;
 
     w = unit_vector(look_dir);
@@ -49,17 +48,23 @@ void camera::initialize() {
     pixel_delta_v = viewport_v/image_height;
 
     // locating the origin of viewport i.e. upperleft
-    vec3 viewport_upper_left = camera_center + (focal_length*w) - viewport_u/2 - viewport_v/2;
+    vec3 viewport_upper_left = camera_center + (focus_dist*w) - viewport_u/2 - viewport_v/2;
     pixel_00_loc = viewport_upper_left + pixel_delta_u*0.5 + pixel_delta_v*0.5;
+
+    // calculating camera defocus disk basis vector
+    double defocus_rad = focus_dist * std::tan(degrees_to_radians(defocus_angle/2));
+    defocus_disk_u = u * defocus_rad;
+    defocus_disk_v = v * defocus_rad;
 }
 
 ray camera::get_ray(int i, int j) const {
-    // Construct a camera ray originating from center to pixel at loc i,j
+    // Construct a camera ray originating from the defoucs disk and
+    // directed at a randomly sampled point around pixel at loc i,j
     vec3 offset         = sample_square();
     vec3 pixel_sample   = pixel_00_loc 
                         + ((i+offset.x())*pixel_delta_u)
                         + ((j+offset.y())*pixel_delta_v);
-    vec3 ray_origin     = camera_center;
+    vec3 ray_origin     = (defocus_angle <= 0) ? camera_center : defocus_disk_sample();
     vec3 ray_dir        = pixel_sample - ray_origin;
 
     return ray(ray_origin, ray_dir);
@@ -72,6 +77,12 @@ vec3 camera::sample_square() const {
         random_double() - 0.5,
         0
     );
+}
+
+point3 camera::defocus_disk_sample() const {
+    // return random point in camera defocus disk
+    point3 p = random_in_unit_disk();
+    return camera_center + (p.x() * defocus_disk_u) + (p.y() * defocus_disk_v);
 }
 
 void camera::render(const visual_obj_list& world) {
