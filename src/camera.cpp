@@ -27,23 +27,29 @@ void camera::initialize() {
 
     pixel_sample_scale = 1.0 / samples_per_pixel;
 
-    camera_center = point3(0, 0, 0);
+    camera_center = origin;
     
     // camera parameters
-    double focal_length = 1;
-    double viewport_height = 2.0;
-    double viewport_width = viewport_height * (1.0*image_width) / image_height;
+    double focal_length     = look_dir.norm();
+    double theta            = degrees_to_radians(vfov);
+    double h                = std::tan(theta/2);
+    double viewport_height  = 2 * h * focal_length;
+    double viewport_width   = viewport_height * (1.0*image_width) / image_height;
+
+    w = unit_vector(look_dir);
+    u = unit_vector(cross(w, up_vec));
+    v = cross(w, u);
 
     // edge vectors
-    vec3 viewport_u = vec3(viewport_width, 0, 0);
-    vec3 viewport_v = vec3(0, -viewport_height, 0);
+    vec3 viewport_u = viewport_width*u;
+    vec3 viewport_v = viewport_height*v;
 
     // delta vectors
     pixel_delta_u = viewport_u/image_width;
     pixel_delta_v = viewport_v/image_height;
 
     // locating the origin of viewport i.e. upperleft
-    vec3 viewport_upper_left = camera_center - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
+    vec3 viewport_upper_left = camera_center + (focal_length*w) - viewport_u/2 - viewport_v/2;
     pixel_00_loc = viewport_upper_left + pixel_delta_u*0.5 + pixel_delta_v*0.5;
 }
 

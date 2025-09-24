@@ -5,12 +5,13 @@
 #include "material.hpp"
 
 class camera {
-    int image_height;
-    double pixel_sample_scale;
-    point3 camera_center;
-    point3 pixel_00_loc;
-    vec3 pixel_delta_u;
-    vec3 pixel_delta_v;
+    int     image_height;
+    double  pixel_sample_scale;
+    point3  camera_center;
+    point3  pixel_00_loc;
+    vec3    pixel_delta_u;
+    vec3    pixel_delta_v;
+    vec3    u, v, w;
 
     void initialize();
     ray get_ray(int i, int j) const;
@@ -21,6 +22,12 @@ public:
     int     image_width         = 100;
     int     samples_per_pixel   = 10;
     int     max_depth           = 10;
+
+    double  vfov                = 90;               // field of view(vertical)
+    point3  origin              = point3(0, 0, 0);  // point camera is looking from
+    vec3    look_dir            = vec3(0, 0, 1);    // direction camera is looking in
+    vec3    up_vec              = vec3(0, 1, 0);    // camera's relative up
+
     void render(const visual_obj_list& world);
 };
 

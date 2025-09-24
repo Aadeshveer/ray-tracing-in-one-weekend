@@ -34,6 +34,11 @@ int main() {
     cam.samples_per_pixel = 100;
     cam.max_depth = 50;
 
+    cam.vfov = 20;
+    cam.origin = point3(-2, 2, 1);
+    cam.look_dir = vec3(2, -2, -2);
+    cam.up_vec = vec3(0, 1, 0);
+
     cam.render(world);
 
     delete material_center;
