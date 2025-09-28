@@ -1,6 +1,6 @@
 #include "shapes.hpp"
 
-sphere::sphere(const point3& center, double radius, material* mat) {
+sphere::sphere(const point3& center, double radius, std::shared_ptr<material> mat) {
     this->center = center;
     this->radius = (radius>0 ? radius : 0);
     this->mat = mat;

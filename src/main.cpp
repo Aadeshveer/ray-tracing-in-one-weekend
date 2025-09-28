@@ -10,52 +10,45 @@ int main() {
     visual_obj_list world;
 
     // materials
-    lambertian material_ground = lambertian(color(0.5, 0.5, 0.5));
-    sphere* s0 = new sphere(point3( 0.0,  -1000, 0.0), 1000, &material_ground);
-    world.add(s0);
+    auto material_ground = std::make_shared<lambertian>(color(0.5, 0.5, 0.5));
+    world.add(std::make_shared<sphere>(point3( 0.0,  -1000, 0.0), 1000, material_ground));
 
-    std::vector<material*> materials;
     for (int a = -11; a < 11; a++) {
         for (int b = -11; b < 11; b++) {
             double choose_mat = random_double();
             point3 center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
 
             if ((center - point3(4, 0.2, 0)).norm() > 0.9) {
-                sphere* s;
+                std::shared_ptr<material> sph_mat;
 
                 if (choose_mat < 0.8) {
                     // diffuse
                     color albedo = color::random() * color::random();
-                    materials.push_back(new lambertian(albedo));
-                    s = new sphere(center, 0.2, materials.back());
-                    world.add(s);
+                    sph_mat = std::make_shared<lambertian>(albedo);
+                    world.add(std::make_shared<sphere>(center, 0.2, sph_mat));
                 } else if (choose_mat < 0.95) {
                     // metal
                     color albedo = color::random(0.5, 1);
                     double fuzz = random_double(0, 0.5);
-                    materials.push_back(new metal(albedo, fuzz));
-                    s = new sphere(center, 0.2, materials.back());
-                    world.add(s);
+                    sph_mat = std::make_shared<metal>(albedo, fuzz);
+                    world.add(std::make_shared<sphere>(center, 0.2, sph_mat));
                 } else {
                     // glass
-                    materials.push_back(new dielectric(1.5));
-                    s = new sphere(center, 0.2, materials.back());
-                    world.add(s);
+                    sph_mat = std::make_shared<dielectric>(1.5);
+                    world.add(std::make_shared<sphere>(center, 0.2, sph_mat));
                 }
             }
         }
     }
 
-    auto material1 = dielectric(1.5);
-    sphere* s1 = new sphere(point3(0, 1, 0), 1.0, &material1);
+    auto material1 = std::make_shared<dielectric>(1.5);
+    world.add(std::make_shared<sphere>(point3(0, 1, 0), 1.0, material1));
     
-    auto material2 = lambertian(color(0.4, 0.2, 0.1));
-    sphere* s2 = new sphere(point3(-4, 1, 0), 1.0, &material2);
+    auto material2 = std::make_shared<lambertian>(color(0.4, 0.2, 0.1));
+    world.add(std::make_shared<sphere>(point3(-4, 1, 0), 1.0, material2));
     
-    auto material3 = metal(color(0.7, 0.6, 0.5), 0.0);
-    sphere* s3 = new sphere(point3(4, 1, 0), 1.0, &material3);
-
-    world.add(s1); world.add(s2); world.add(s3);
+    auto material3 = std::make_shared<metal>(color(0.7, 0.6, 0.5), 0.0);
+    world.add(std::make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
 
     camera cam;
 
@@ -74,7 +67,4 @@ int main() {
     
     cam.render(world);
 
-    for(material* m:materials) {
-        delete m;
-    }
 }

@@ -1,7 +1,7 @@
 #include "visual_obj_list.hpp"
 
 visual_obj_list::visual_obj_list() {}
-visual_obj_list::visual_obj_list(visual_obj* obj) {
+visual_obj_list::visual_obj_list(std::shared_ptr<visual_obj> obj) {
     this->add(obj);
 }
 visual_obj_list::~visual_obj_list() {
@@ -9,16 +9,10 @@ visual_obj_list::~visual_obj_list() {
 }
 
 void visual_obj_list::clear() {
-    for(auto &ptr: objects) {
-        if(ptr){
-            delete ptr;
-            ptr = nullptr;
-        }
-    }
     objects.clear();
 }
 
-void visual_obj_list::add(visual_obj* ptr) {
+void visual_obj_list::add(std::shared_ptr<visual_obj> ptr) {
     objects.push_back(ptr);
 }
 
